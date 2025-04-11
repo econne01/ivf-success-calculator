@@ -1,46 +1,68 @@
-import { useEffect, useState } from 'react'
+import { useRef, useState } from 'react'
+import {Button, FieldError, Form, Input, Label, TextField} from 'react-aria-components';
 import axios from 'axios';
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-  const [isLoading, setIsLoading] = useState(true);
-  const [backendMessage, setBackendMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null); // Add a ref for the form
 
-  useEffect(() => {
-    // Fetch from the backend after a delay, to prove loading state works
+  // Handle form submission
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    let data = Object.fromEntries(new FormData(event.currentTarget));
+    setIsLoading(true);
+    console.log('Form data:', data);
     setTimeout(() => {
-      axios.get('/api')
+      console.log('Simulating a delay...');
+      axios.post('/api/calculate-success-rate', JSON.stringify(data))
         .then(response => {
-          setBackendMessage(response.data);
+          console.log('Success rate:', response.data.successRate);
+          clearForm();
         })
         .catch(error => {
-          console.error('Error fetching data:', error);
+          console.error('Error submitting form:', error);
         })
         .finally(() => {
           setIsLoading(false);
         });
     }, 1000);
-  }, []);
+  }
+
+  // Function to clear the form inputs
+  const clearForm = () => {
+    if (formRef.current) {
+      formRef.current.reset();
+    }
+  };
 
   return (
     <>
-      <h1>New Demo App with Vite + React!</h1>
-      <div className="message">
-        <h2>Backend Message</h2>
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : (
-          <p>{backendMessage}</p>
-        )}
+      <div className="app-header">
+        <h1 className="app-title">IVF Success Rate Calculator</h1>
       </div>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+      <div className="app-body">
+        <div className="instructions-container">
+          <h2>Estimate your chances of having a baby with IVF</h2>
+          <p>This is a simple form that calculates the success rate of IVF based on user input.</p>
+          <p>Please fill out the form below:</p>
+          {isLoading && <p>Loading...</p>}
+        </div>
+        <div className="form-container">
+          <Form
+            ref={formRef}
+            onSubmit={onSubmit}
+            onReset={clearForm}
+          >
+            <TextField name="email" type="email" isRequired>
+              <Label>Email</Label>
+              <Input />
+              <FieldError />
+            </TextField>
+            <Button type="submit">Submit</Button>
+            <Button type="reset">Start Over</Button>
+          </Form>
+        </div>
       </div>
     </>
   )
