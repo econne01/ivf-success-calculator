@@ -39,27 +39,30 @@ function App() {
   return (
     <>
       <div className="app-header">
-        <h1 className="app-title">New Demo App with Vite + React!</h1>
+        <h1 className="app-title">IVF Success Rate Calculator</h1>
       </div>
-      <div className="message">
-        <p>Welcome to the new demo app! This is a simple form that calculates the success rate of IVF based on user input.</p>
-        <p>Please fill out the form below:</p>
-        {isLoading && <p>Loading...</p>}
-      </div>
-      <div className="form-container">
-        <Form
-          ref={formRef}
-          onSubmit={onSubmit}
-          onReset={clearForm}
-        >
-          <TextField name="email" type="email" isRequired>
-            <Label>Email</Label>
-            <Input />
-            <FieldError />
-          </TextField>
-          <Button type="submit">Submit</Button>
-          <Button type="reset">Start Over</Button>
-        </Form>
+      <div className="app-body">
+        <div className="instructions-container">
+          <h2>Estimate your chances of having a baby with IVF</h2>
+          <p>This is a simple form that calculates the success rate of IVF based on user input.</p>
+          <p>Please fill out the form below:</p>
+          {isLoading && <p>Loading...</p>}
+        </div>
+        <div className="form-container">
+          <Form
+            ref={formRef}
+            onSubmit={onSubmit}
+            onReset={clearForm}
+          >
+            <TextField name="email" type="email" isRequired>
+              <Label>Email</Label>
+              <Input />
+              <FieldError />
+            </TextField>
+            <Button type="submit">Submit</Button>
+            <Button type="reset">Start Over</Button>
+          </Form>
+        </div>
       </div>
     </>
   )

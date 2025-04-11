@@ -1,14 +1,13 @@
 #root {
+  width: 100%;
   max-width: 1280px;
-  text-align: center;
 }
 
 .app-header {
   display: flex;
-  top: 0; /* Position it at the very top of the page */
-  width: 100%; /* Full width */
+  top: 0;
+  width: 100%;
   text-align: justify;
-  padding: 0.5rem 2rem; /* Padding for the header */
   background-color: #63b3fa; /* Light blue background */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
@@ -16,6 +15,21 @@
 .app-header .app-title {
   font-size: 2.5rem;
   font-weight: bold;
-  color: #fefdfe; /* White text */
+  color: #fefdfe;
   margin: 0;
+  padding: 0.5rem 2rem;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.app-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2rem;
+}
+
+.instructions-container h2 {
+  color: #042680;
 }
