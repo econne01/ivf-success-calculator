@@ -4,7 +4,7 @@ export default {
     testEnvironment: "node",
     testPathIgnorePatterns: ['/node_modules/', '/dist/'],
     setupFilesAfterEnv: [
-      '<rootDir>/jest.setup.ts'
+      '<rootDir>/src/jest.setup.ts'
     ],
   };
   
