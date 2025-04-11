@@ -1,10 +1,21 @@
 #root {
   max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
   text-align: center;
 }
 
-.card {
-  padding: 2em;
+.app-header {
+  display: flex;
+  top: 0; /* Position it at the very top of the page */
+  width: 100%; /* Full width */
+  text-align: justify;
+  padding: 0.5rem 2rem; /* Padding for the header */
+  background-color: #63b3fa; /* Light blue background */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.app-header .app-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #fefdfe; /* White text */
+  margin: 0;
 }

@@ -32,13 +32,15 @@ function App() {
   // Function to clear the form inputs
   const clearForm = () => {
     if (formRef.current) {
-      formRef.current.reset(); // Reset the form inputs
+      formRef.current.reset();
     }
   };
 
   return (
     <>
-      <h1>New Demo App with Vite + React!</h1>
+      <div className="app-header">
+        <h1 className="app-title">New Demo App with Vite + React!</h1>
+      </div>
       <div className="message">
         <p>Welcome to the new demo app! This is a simple form that calculates the success rate of IVF based on user input.</p>
         <p>Please fill out the form below:</p>
