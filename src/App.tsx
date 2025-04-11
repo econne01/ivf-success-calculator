@@ -44,8 +44,18 @@ function App() {
       <div className="app-body">
         <div className="instructions-container">
           <h2>Estimate your chances of having a baby with IVF</h2>
-          <p>This is a simple form that calculates the success rate of IVF based on user input.</p>
-          <p>Please fill out the form below:</p>
+          <p>
+            This is a simple form that calculates the success rate of IVF based on user input.
+            The calculations follow the{' '}
+            <a href="https://www.cdc.gov/art/ivf-success-estimator/index.html">CDC estimates</a>.
+            Please note that this tool has some limitations, including that it can only generate estimates for
+            specific ranges for age, height and weight.
+          </p>
+          <p>
+            Please note that the IVF Success Estimator does not provide medical advice, diagnosis, or treatment.
+            You should always talk with your doctor about your specific treatment plan and potential for success.
+            </p>
+          <p>Fill out the form below to get your estimated rate of success:</p>
           {isLoading && <p>Loading...</p>}
         </div>
         <div className="form-container">
