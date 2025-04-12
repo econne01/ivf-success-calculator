@@ -14,9 +14,26 @@ async function parseCsv(filePath: string): Promise<Record<string, string>[]> {
   });
 }
 
+type FormulaSelectionParams = {
+  isUsingOwnEggs: boolean;
+  hasPrevIVF: boolean;
+  isInfertilityReasonKnown: boolean;
+};
 
+type FormulaCalculationParams = {
+  age: number;
+  height: number; // in inches, from 4'6" to 6'0", aka 54" to 72"
+  weight: number; // in lbs, from 80 to 300
+  numPriorPregnancies: number; // 0 to 2. Any more than 2 is counted the same as 2
+  numPriorBirths: number; // 0 to 2. Any more than 2 is counted the same as 2
+};
 
-export async function calculate(reasonForIVF: string): Promise<number> {
+type InfertilityReasonParams = {
+  diminished_ovarian_reserve: boolean;
+  uterine_factor: boolean;
+};
+
+export async function calculate(formulaParams: FormulaSelectionParams, reasonForIVF: string): Promise<number> {
   const filePath = path.join(path.dirname(__dirname), 'data', 'ivf_success_formulas.csv');
   console.log('File path:', filePath);
   try {
