@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
+    "dev": "concurrently \"npx tsc --watch\" \"mkdir -p dist/data && cp src/data/ivf_success_formulas.csv dist/data/.\" \"nodemon -q dist/index.js\"",
     "test": "jest"
   },
   "author": "Eric Connelly",
@@ -18,5 +18,8 @@
     "nodemon": "^3.1.9",
     "ts-jest": "^29.3.1",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "csv-parser": "^3.2.0"
   }
 }

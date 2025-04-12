@@ -3,10 +3,10 @@ import { calculate } from '../controllers/successCalculator';
 
 const router = express.Router();
 
-router.post('/calculate-success-rate', (req: Request, res: Response) => {
+router.post('/calculate-success-rate', async (req: Request, res: Response) => {
     const { isUsingOwnEggs, hasPrevIVF, reasonForIVF } = req.body;
     console.log('Handling request with body:', req.body);
-    let successRate = calculate(reasonForIVF);
+    let successRate = await calculate(reasonForIVF);
     res.status(200).json({
         successRate: successRate,
     });
