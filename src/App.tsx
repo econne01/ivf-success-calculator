@@ -26,6 +26,7 @@ function App() {
 
   // Handle form submission
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    console.log('ERIC DEBUG: onSubmit');
     event.preventDefault();
   
     // Convert FormData to an object with string values (ie, ignore Files)
