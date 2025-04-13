@@ -12,7 +12,6 @@ import {
   Select,
   SelectValue,
   Group,
-  Checkbox,
   CheckboxGroup
 } from 'react-aria-components';
 import axios from 'axios';
@@ -29,37 +28,52 @@ function App() {
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
   
-    // Convert FormData to an object with string values
+    // Convert FormData to an object with string values (ie, ignore Files)
+    // Then prepare the data for submission to backend
     const formData = new FormData(event.currentTarget);
-    const data: Record<string, string> = {};
+    const formDataStrings: Record<string, string> = {};
+    const postData: Record<string, string | boolean | number> = {};
   
     formData.forEach((value, key) => {
       if (typeof value === 'string') {
-        data[key] = value; // Assign string values directly
+        formDataStrings[key] = value; // Assign string values directly
       } else {
         console.warn(`Skipping non-string value for key: ${key}`);
       }
     });
   
+    // TODO: we need these separately
     // Add the selected reason(s) to the data
-    data['reasonForIVF'] = selectedReason.join(',');
+    formDataStrings['reasonForIVF'] = selectedReason.join(',');
   
     // Combine height fields
-    data['height'] = (
-      parseInt(data['height-feet'] || '0') * 12 +
-      parseInt(data['height-inches'] || '0')
+    formDataStrings['height'] = (
+      parseInt(formDataStrings['height-feet'] || '0') * 12 +
+      parseInt(formDataStrings['height-inches'] || '0')
     ).toString();
+
+    // Prepare the data for submission, following simplified logic for this demo app
+    postData['isUsingOwnEggs'] = formDataStrings['isUsingOwnEggs'] === 'own-eggs';
+    postData['hasPrevIVF'] = parseInt(formDataStrings['numPrevIVF']) > 0 ? true : false;
+    postData['numPriorPregnancies'] = parseInt(formDataStrings['numPrevPregnancies']);
+    postData['numPriorBirths'] = parseInt(formDataStrings['numPrevDeliveries']);
+    postData['age'] = parseInt(formDataStrings['age']);
+    postData['height'] = parseInt(formDataStrings['height']);
+    postData['weight'] = parseInt(formDataStrings['weight']);
+    postData['reasonForIVF'] = formDataStrings['reasonForIVF'];
+    postData['isInfertilityReasonKnown'] = selectedReason.length > 0;
   
     setIsLoading(true);
-    console.log('Form data:', data);
+    console.log('Form data:', formDataStrings);
+    console.log('Post data:', postData);
   
     setTimeout(() => {
       console.log('Simulating a delay...');
       axios
-        .post('/api/calculate-success-rate', JSON.stringify(data))
+        .post('/api/calculate-success-rate', JSON.stringify(postData))
         .then((response) => {
           console.log('Success rate:', response.data.successRate);
-          clearForm();
+          // clearForm();
         })
         .catch((error) => {
           console.error('Error submitting form:', error);
@@ -119,7 +133,7 @@ function App() {
               </Popover>
             </Select>
 
-            <Select name="hasPrevIVF" isRequired>
+            <Select name="numPrevIVF" isRequired>
               <Label>How many times have you used IVF in the past (include all cycles, even those not resulting in pregnancy)?</Label>
               <Button>
                 <SelectValue />
