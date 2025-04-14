@@ -30,7 +30,7 @@ async function parseCsv(filePath: string): Promise<IVFSuccessFormulaRow[]> {
 type FormulaSelectionParams =
   | {
       isUsingOwnEggs: true;
-      hasPrevIVF: boolean; // Required when isUsingOwnEggs is true
+      hasPriorIVF: boolean; // Required when isUsingOwnEggs is true
       isInfertilityReasonKnown: boolean;
     }
   | {
@@ -106,7 +106,7 @@ type IVFSuccessFormulaRowKeys = keyof IVFSuccessFormulaRow;
 
 const formulaPropToHeaderMap: Record<string, IVFSuccessFormulaRowKeys> = {
   isUsingOwnEggs: 'param_using_own_eggs',
-  hasPrevIVF: 'param_attempted_ivf_previously',
+  hasPriorIVF: 'param_attempted_ivf_previously',
   isInfertilityReasonKnown: 'param_is_reason_for_infertility_known',
 };
 
@@ -124,7 +124,7 @@ export async function getFormula(formulaParams: FormulaSelectionParams): Promise
   // Filter the Forumla rows to match the selection criteria in formulaParams
   const formula = data.find((row: IVFSuccessFormulaRow) => {
     return row.param_using_own_eggs === formulaParams.isUsingOwnEggs &&
-           (!formulaParams.isUsingOwnEggs || row.param_attempted_ivf_previously === formulaParams.hasPrevIVF) &&
+           (!formulaParams.isUsingOwnEggs || row.param_attempted_ivf_previously === formulaParams.hasPriorIVF) &&
            row.param_is_reason_for_infertility_known === formulaParams.isInfertilityReasonKnown;
   });
   if (!formula) {

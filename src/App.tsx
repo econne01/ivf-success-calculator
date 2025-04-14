@@ -26,7 +26,6 @@ function App() {
 
   // Handle form submission
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    console.log('ERIC DEBUG: onSubmit');
     event.preventDefault();
   
     // Convert FormData to an object with string values (ie, ignore Files)
@@ -55,9 +54,9 @@ function App() {
 
     // Prepare the data for submission, following simplified logic for this demo app
     postData['isUsingOwnEggs'] = formDataStrings['isUsingOwnEggs'] === 'own-eggs';
-    postData['hasPrevIVF'] = parseInt(formDataStrings['numPrevIVF']) > 0 ? true : false;
-    postData['numPriorPregnancies'] = parseInt(formDataStrings['numPrevPregnancies']);
-    postData['numPriorBirths'] = parseInt(formDataStrings['numPrevDeliveries']);
+    postData['hasPriorIVF'] = parseInt(formDataStrings['numPriorIVF']) > 0 ? true : false;
+    postData['numPriorPregnancies'] = parseInt(formDataStrings['numPriorPregnancies']);
+    postData['numPriorBirths'] = parseInt(formDataStrings['numPriorBirths']);
     postData['age'] = parseInt(formDataStrings['age']);
     postData['height'] = parseInt(formDataStrings['height']);
     postData['weight'] = parseInt(formDataStrings['weight']);
@@ -134,7 +133,7 @@ function App() {
               </Popover>
             </Select>
 
-            <Select name="numPrevIVF" isRequired>
+            <Select name="numPriorIVF" isRequired>
               <Label>How many times have you used IVF in the past (include all cycles, even those not resulting in pregnancy)?</Label>
               <Button>
                 <SelectValue />
@@ -150,7 +149,7 @@ function App() {
               </Popover>
             </Select>
 
-            <Select name="numPrevPregnancies" isRequired>
+            <Select name="numPriorPregnancies" isRequired>
               <Label>How many prior pregnancies have you had?</Label>
               <Button>
                 <SelectValue />
@@ -165,7 +164,7 @@ function App() {
               </Popover>
             </Select>
             
-            <Select name="numPrevDeliveries" isRequired>
+            <Select name="numPriorBirths" isRequired>
               <Label>How many prior births have you had? (Count only the number of deliveries. Twins counts as one time)</Label>
               <Button>
                 <SelectValue />

@@ -4,13 +4,13 @@ import App from './App';
     
 jest.mock('axios'); // Mock axios
 
-async function fillRequiredFields(overrides: Partial<Record<string, string | boolean>> = {}) {
+async function fillRequiredFields(overrides: Partial<Record<string, string>> = {}) {
   // Default values for the form fields
   const defaults = {
-    isUsingOwnEggs: 'own-eggs',
-    numPrevIVF: '2',
-    numPrevPregnancies: '1',
-    numPrevDeliveries: '1',
+    isUsingOwnEggs: 'Own Eggs',
+    numPriorIVF: '2',
+    numPriorPregnancies: '1',
+    numPriorBirths: '1',
     reasonForIVF: 'unexplained',
     age: '40',
     heightFeet: '5',
@@ -28,29 +28,29 @@ async function fillRequiredFields(overrides: Partial<Record<string, string | boo
   const ownEggsOption = screen.getByRole('option', { name: new RegExp(values.isUsingOwnEggs as string, 'i') });
   fireEvent.click(ownEggsOption);
 
-  // Fill in the "numPrevIVF" field (if applicable)
-  const numPrevIVFDropdown = screen.getByLabelText(/have you used ivf in the past/i); // Locate the dropdown
-  fireEvent.click(numPrevIVFDropdown); // Open the dropdown
+  // Fill in the "numPriorIVF" field (if applicable)
+  const numPriorIVFDropdown = screen.getByLabelText(/have you used ivf in the past/i);
+  fireEvent.click(numPriorIVFDropdown);
 
-  const numPrevIVFOption = within(screen.getByRole('dialog'))
-    .getByRole('option', { name: new RegExp(values.numPrevIVF as string, 'i') }); // Locate the specific option
-  fireEvent.click(numPrevIVFOption); // Select the option
+  const numPriorIVFOption = within(screen.getByRole('dialog'))
+    .getByRole('option', { name: new RegExp(values.numPriorIVF as string, 'i') })
+  fireEvent.click(numPriorIVFOption);
 
-  // Fill in the "numPrevPregnancies" field (if applicable)
-  const numPrevPregnanciesButton = screen.getByLabelText(/how many prior pregnancies have you had/i);
-  fireEvent.click(numPrevPregnanciesButton);
+  // Fill in the "numPriorPregnancies" field (if applicable)
+  const numPriorPregnanciesButton = screen.getByLabelText(/how many prior pregnancies have you had/i);
+  fireEvent.click(numPriorPregnanciesButton);
 
-  const numPrevPregnanciesOption = within(screen.getByRole('dialog'))
-    .getByText(new RegExp(values.numPrevPregnancies as string, 'i'));
-  fireEvent.click(numPrevPregnanciesOption);
+  const numPriorPregnanciesOption = within(screen.getByRole('dialog'))
+    .getByText(new RegExp(values.numPriorPregnancies as string, 'i'));
+  fireEvent.click(numPriorPregnanciesOption);
 
-  // Fill in the "numPrevDeliveries" field (if applicable)
-  const numPrevDeliveriesButton = screen.getByLabelText(/how many prior births have you had/i);
-  fireEvent.click(numPrevDeliveriesButton);
+  // Fill in the "numPriorDeliveries" field (if applicable)
+  const numPriorBirthsButton = screen.getByLabelText(/how many prior births have you had/i);
+  fireEvent.click(numPriorBirthsButton);
 
-  const numPrevDeliveriesOption = within(screen.getByRole('dialog'))
-    .getByText(new RegExp(values.numPrevDeliveries as string, 'i'));
-  fireEvent.click(numPrevDeliveriesOption);
+  const numPriorBirthsOption = within(screen.getByRole('dialog'))
+    .getByText(new RegExp(values.numPriorBirths as string, 'i'));
+  fireEvent.click(numPriorBirthsOption);
 
   // Fill in the "reasonForIVF" field
   const reasonForIVFSelect = screen.getByLabelText(/reason for your ivf treatment/i);
@@ -101,6 +101,101 @@ describe('App Form Submission', () => {
         '/api/calculate-success-rate',
         expect.stringContaining('"isUsingOwnEggs":true')
       );
-    }, { timeout: 3000 }); // Set max waiting time to 3 seconds
+    }, { timeout: 3000 });
+  });
+
+  describe('sets whether user has previous IVF', () => {
+    it('hasPriorIVF=false for 0 previous IVF', async () => {
+      await fillRequiredFields({
+        numPriorIVF: 'never',
+      });
+
+      // Submit the form
+      const submitButton = screen.getByRole('button', { name: /submit/i });
+      fireEvent.click(submitButton);
+
+      // Wait for the axios.post call
+      await waitFor(() => {
+        expect(mockedAxiosPost).toHaveBeenCalledWith(
+          '/api/calculate-success-rate',
+          expect.stringContaining('"hasPriorIVF":false')
+        );
+      }, { timeout: 3000 });
+    });
+
+    it('hasPriorIVF=true for 1 previous IVF', async () => {
+      await fillRequiredFields({
+        numPriorIVF: '1',
+      });
+
+      // Submit the form
+      const submitButton = screen.getByRole('button', { name: /submit/i });
+      fireEvent.click(submitButton);
+
+      // Wait for the axios.post call
+      await waitFor(() => {
+        expect(mockedAxiosPost).toHaveBeenCalledWith(
+          '/api/calculate-success-rate',
+          expect.stringContaining('"hasPriorIVF":true')
+        );
+      }, { timeout: 3000 });
+    });
+
+    it('hasPriorIVF=true for 3+ previous IVF', async () => {
+      await fillRequiredFields({
+        numPriorIVF: '3 or more',
+      });
+
+      // Submit the form
+      const submitButton = screen.getByRole('button', { name: /submit/i });
+      fireEvent.click(submitButton);
+
+      // Wait for the axios.post call
+      await waitFor(() => {
+        expect(mockedAxiosPost).toHaveBeenCalledWith(
+          '/api/calculate-success-rate',
+          expect.stringContaining('"hasPriorIVF":true')
+        );
+      }, { timeout: 3000 });
+    });
+  });
+
+
+  describe('Number of previous pregnancies', () => {
+    it('sets 0 for None', async () => {
+      await fillRequiredFields({
+        numPriorPregnancies: 'None',
+      });
+
+      // Submit the form
+      const submitButton = screen.getByRole('button', { name: /submit/i });
+      fireEvent.click(submitButton);
+
+      // Wait for the axios.post call
+      await waitFor(() => {
+        expect(mockedAxiosPost).toHaveBeenCalledWith(
+          '/api/calculate-success-rate',
+          expect.stringContaining('"numPriorPregnancies":0')
+        );
+      }, { timeout: 3000 });
+    });
+
+    it('sets 2 for "2 or more""', async () => {
+      await fillRequiredFields({
+        numPriorPregnancies: '2 or more',
+      });
+
+      // Submit the form
+      const submitButton = screen.getByRole('button', { name: /submit/i });
+      fireEvent.click(submitButton);
+
+      // Wait for the axios.post call
+      await waitFor(() => {
+        expect(mockedAxiosPost).toHaveBeenCalledWith(
+          '/api/calculate-success-rate',
+          expect.stringContaining('"numPriorPregnancies":2')
+        );
+      }, { timeout: 3000 });
+    });
   });
 });

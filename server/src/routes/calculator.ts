@@ -4,7 +4,7 @@ import { getFormula, calculate } from '../controllers/successCalculator';
 const router = express.Router();
 
 router.post('/calculate-success-rate', async (req: Request, res: Response) => {
-    const { isUsingOwnEggs, hasPrevIVF, reasonForIVF } = req.body;
+    const { isUsingOwnEggs, hasPriorIVF, reasonForIVF } = req.body;
     console.log('Handling request with body:', req.body);
 
     const formula = await getFormula(req.body);
