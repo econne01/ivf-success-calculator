@@ -59,22 +59,8 @@ type InfertilityReasonParams = {
 // create a custom type to represent integers
 type Integer = number & { __integer: true };
 
-// This type defines the structure of the data in the CSV file
-type IVFSuccessFormulaRow = {
-  // Parameters for finding the relevant formula
-  param_using_own_eggs: boolean;
-  param_attempted_ivf_previously: boolean;
-  param_is_reason_for_infertility_known: boolean;
-  cdc_formula: string;
-  // calculation params for Age & BMI score
-  formula_intercept: number;
-  formula_age_linear_coefficient: number;
-  formula_age_power_coefficient: number;
-  formula_age_power_factor: number;
-  formula_bmi_linear_coefficient: number;
-  formula_bmi_power_coefficient: number;
-  formula_bmi_power_factor: Integer;
-  // coefficients for the infertility reasons
+type IVFFormulaInfertilityScores = {
+  // scores for the infertility reasons
   formula_tubal_factor_true_value: number;
   formula_tubal_factor_false_value: Integer;
   formula_male_factor_infertility_true_value: number;
@@ -91,15 +77,35 @@ type IVFSuccessFormulaRow = {
   formula_other_reason_false_value: Integer;
   formula_unexplained_infertility_true_value: number;
   formula_unexplained_infertility_false_value: Integer;
-  // coefficients for the number of prior pregnancies
+}
+
+type IVFFormulaPriorScores = {
+  // scores for the number of prior pregnancies
   formula_prior_pregnancies_0_value: Integer;
   formula_prior_pregnancies_1_value: number;
   'formula_prior_pregnancies_2+_value': number;
-  // coefficients for the number of prior births
+  // scores for the number of prior births
   formula_prior_live_births_0_value: Integer;
   formula_prior_live_births_1_value: number;
   'formula_prior_live_births_2+_value': number;
-};
+}
+
+// This type defines the structure of the data in the CSV file
+type IVFSuccessFormulaRow = {
+  // Parameters for finding the relevant formula
+  param_using_own_eggs: boolean;
+  param_attempted_ivf_previously: boolean;
+  param_is_reason_for_infertility_known: boolean;
+  cdc_formula: string;
+  // calculation params for Age & BMI score
+  formula_intercept: number;
+  formula_age_linear_coefficient: number;
+  formula_age_power_coefficient: number;
+  formula_age_power_factor: number;
+  formula_bmi_linear_coefficient: number;
+  formula_bmi_power_coefficient: number;
+  formula_bmi_power_factor: Integer;
+} & IVFFormulaInfertilityScores & IVFFormulaPriorScores;
 type IVFSuccessFormulaRowKeys = keyof IVFSuccessFormulaRow;
 
 
@@ -131,7 +137,59 @@ export async function getFormula(formulaParams: FormulaSelectionParams): Promise
   return formula;
 }
 
-export async function calculate(formula: IVFSuccessFormulaRow): Promise<number> {
+export async function calculate(
+    formula: IVFSuccessFormulaRow,
+    calcParams: FormulaCalculationParams,
+    reasonParams: InfertilityReasonParams
+): Promise<number> {
+  const interceptScore = formula['formula_intercept'];
+
+  const ageScore = 
+    formula['formula_age_linear_coefficient'] * calcParams['age'] +
+    formula['formula_age_power_coefficient'] * Math.pow(calcParams['age'], formula['formula_age_power_factor']);
   
-  return Math.random();
+  const userBMI = calcParams['weight'] / Math.pow(calcParams['height'], 2) * 703;
+  const BMIScore =
+    formula['formula_bmi_linear_coefficient'] * userBMI +
+    formula['formula_bmi_power_coefficient'] * Math.pow(userBMI, formula['formula_bmi_power_factor']);
+
+  // Calculate the infertility reason scores
+  let infertilityReasonScore = 0;
+  for (const reason of Object.keys(reasonParams) as (keyof InfertilityReasonParams)[]) {
+    // we need to convert to unknown first to avoid type errors
+    const key = `formula_${reason}_${reasonParams[reason] ? 'true' : 'false'}_value` as keyof IVFFormulaInfertilityScores;
+    if (formula[key] !== undefined) {
+      infertilityReasonScore += formula[key];
+    }
+  }
+
+  // Calculate the prior pregnancy and birth scores
+  let priorPregnancyCnt = Math.max(0, Math.min(2, calcParams.numPriorPregnancies));
+  const priorPregnancyKey =`formula_prior_pregnancies_${
+      priorPregnancyCnt === 2 ? '2+' : priorPregnancyCnt
+    }_value` as keyof IVFFormulaPriorScores;
+  const priorPregnancyScore = formula[priorPregnancyKey];
+
+
+  let priorBirthsCnt = Math.max(0, Math.min(2, calcParams.numPriorBirths));
+  const priorBirthKey =`formula_prior_live_births_${
+    priorBirthsCnt === 2 ? '2+' : priorBirthsCnt
+    }_value` as keyof IVFFormulaPriorScores;
+  const priorBirthsScore = formula[priorBirthKey];
+
+  const score = interceptScore +
+    ageScore +
+    BMIScore +
+    infertilityReasonScore +
+    priorPregnancyScore +
+    priorBirthsScore;
+  console.log('Intercept Score:', interceptScore);
+  console.log('Age Score:', ageScore);
+  console.log('BMI Score:', BMIScore);
+  console.log('Infertility Reason Score:', infertilityReasonScore);
+  console.log('Prior Pregnancy Score:', priorPregnancyScore);
+  console.log('Prior Births Score:', priorBirthsScore);
+  console.log('Score:', score);
+  console.log('Precentage', Math.exp(score) / (1 + Math.exp(score)));
+  return Math.exp(score) / (1 + Math.exp(score));
 }
