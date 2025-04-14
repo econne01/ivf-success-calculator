@@ -52,7 +52,6 @@ function App() {
   
     // TODO: we need these separately
     // Add the selected reason(s) to the data
-    formDataStrings['reasonForIVF'] = selectedReason.join(',');
   
     // Combine height fields
     formDataStrings['height'] = (
@@ -68,8 +67,15 @@ function App() {
     postData['age'] = parseInt(formDataStrings['age']);
     postData['height'] = parseInt(formDataStrings['height']);
     postData['weight'] = parseInt(formDataStrings['weight']);
-    postData['reasonForIVF'] = formDataStrings['reasonForIVF'];
-    postData['isInfertilityReasonKnown'] = selectedReason.length > 0;
+    postData['tubal_factor'] = selectedTubalFactor;
+    postData['male_factor_infertility'] = selectedMaleInfertility;
+    postData['endometriosis'] = selectedEndometriosis;
+    postData['ovulatory_disorder'] = selectedOvulatoryDisorder;
+    postData['diminished_ovarian_reserve'] = selectedDiminishedReserve;
+    postData['uterine_factor'] = selectedUterineFactor;
+    postData['other_reason'] = selectedOtherReason;
+    postData['unexplained_infertility'] = selectedUnexplainedReason;
+    postData['unknown_reason'] = selectedUnknownReason;
   
     setIsLoading(true);
     console.log('Form data:', formDataStrings);
@@ -278,7 +284,7 @@ function App() {
                 </FormCheckbox>
                 <div>(OR)</div>
                 <FormCheckbox
-                  value="no-reason"
+                  value="unknown"
                   isSelected={selectedUnknownReason}
                   onChange={(isChecked) => {
                     if (isChecked) {

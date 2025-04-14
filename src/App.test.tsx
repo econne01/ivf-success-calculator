@@ -4,18 +4,34 @@ import App from './App';
     
 jest.mock('axios'); // Mock axios
 
-async function fillRequiredFields(overrides: Partial<Record<string, string>> = {}) {
+async function fillRequiredFields(overrides: Partial<
+  (
+    Record<string, string> | 
+    Record<'reasonForIVF', Record<string, boolean>>
+  )> = {}) {
   // Default values for the form fields
   const defaults = {
     isUsingOwnEggs: 'Own Eggs',
     numPriorIVF: '2',
     numPriorPregnancies: '1',
     numPriorBirths: '1',
-    reasonForIVF: 'unexplained',
+    // reasonForIVF: 'unexplained',
     age: '40',
     heightFeet: '5',
     heightInches: '6',
     weight: '125',
+    // Reasons for IVF checkboxes
+    reasonForIVF: {
+      tubal_factor: true,
+      male_factor_infertility: true,
+      endometriosis: false,
+      ovulatory_disorder: false,
+      diminished_ovarian_reserve: false,
+      uterine_factor: false,
+      other_reason: false,
+      unexplained_infertility: false,
+      unknown: false,
+    }
   };
 
   // Merge defaults with overrides
@@ -53,11 +69,21 @@ async function fillRequiredFields(overrides: Partial<Record<string, string>> = {
   fireEvent.click(numPriorBirthsOption);
 
   // Fill in the "reasonForIVF" field
-  const reasonForIVFSelect = screen.getByLabelText(/reason for your ivf treatment/i);
-  fireEvent.click(reasonForIVFSelect);
-
-  const reasonOption = screen.getByText(new RegExp(values.reasonForIVF as string, 'i'));
-  fireEvent.click(reasonOption);
+  // for each checkbox in the reasonForIVF object
+  Object.entries(values.reasonForIVF).forEach(([key, value]) => {
+    let labelRegex;
+    if (key === 'unexplained_infertility') {
+      labelRegex = /unexplained/i;
+    } else if (key === 'unknown') {
+      labelRegex = /no reason/i;
+    } else {
+      labelRegex = new RegExp(key.replace(/_/g, ' '), 'i');
+    }
+    const checkbox = screen.getByLabelText(labelRegex);
+    if (value) {
+      fireEvent.click(checkbox);
+    }
+  });
 
   // Fill in the "age" field
   const ageInput = screen.getByRole('textbox', { name: /age/i });
@@ -265,6 +291,28 @@ describe('App Form Submission', () => {
       // ...expect the numPriorBirths to be reset
       const numPriorBirthsButton = screen.getByLabelText(/how many prior births have you had/i);
       expect(numPriorBirthsButton).toHaveTextContent('Select an item');
+    });
+  });
+
+  describe('Reason for IVF', () => {
+    it('sets uterine_factor true for "uterine factor" checked', async () => {
+      await fillRequiredFields({
+        reasonForIVF: {
+          'uterine_factor': true
+        }
+      });
+
+      // Submit the form
+      const submitButton = screen.getByRole('button', { name: /submit/i });
+      fireEvent.click(submitButton);
+
+      // Wait for the axios.post call
+      await waitFor(() => {
+        expect(mockedAxiosPost).toHaveBeenCalledWith(
+          '/api/calculate-success-rate',
+          expect.stringContaining('"uterine_factor":true')
+        );
+      }, { timeout: 3000 });
     });
   });
 });
