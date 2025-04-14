@@ -125,7 +125,9 @@ describe('App Form Submission', () => {
     await waitFor(() => {
       expect(mockedAxiosPost).toHaveBeenCalledWith(
         '/api/calculate-success-rate',
-        expect.stringContaining('"isUsingOwnEggs":true')
+        expect.objectContaining({
+          isUsingOwnEggs: true,
+        })
       );
     }, { timeout: 3000 });
   });
@@ -144,7 +146,9 @@ describe('App Form Submission', () => {
       await waitFor(() => {
         expect(mockedAxiosPost).toHaveBeenCalledWith(
           '/api/calculate-success-rate',
-          expect.stringContaining('"hasPriorIVF":false')
+          expect.objectContaining({
+            hasPriorIVF: false,
+          })
         );
       }, { timeout: 3000 });
     });
@@ -162,7 +166,9 @@ describe('App Form Submission', () => {
       await waitFor(() => {
         expect(mockedAxiosPost).toHaveBeenCalledWith(
           '/api/calculate-success-rate',
-          expect.stringContaining('"hasPriorIVF":true')
+          expect.objectContaining({
+            hasPriorIVF: true,
+          })
         );
       }, { timeout: 3000 });
     });
@@ -180,7 +186,9 @@ describe('App Form Submission', () => {
       await waitFor(() => {
         expect(mockedAxiosPost).toHaveBeenCalledWith(
           '/api/calculate-success-rate',
-          expect.stringContaining('"hasPriorIVF":true')
+          expect.objectContaining({
+            hasPriorIVF: true,
+          })
         );
       }, { timeout: 3000 });
     });
@@ -200,7 +208,9 @@ describe('App Form Submission', () => {
       await waitFor(() => {
         expect(mockedAxiosPost).toHaveBeenCalledWith(
           '/api/calculate-success-rate',
-          expect.stringContaining('"numPriorPregnancies":0')
+          expect.objectContaining({
+            numPriorPregnancies: 0,
+          })
         );
       }, { timeout: 3000 });
     });
@@ -218,7 +228,9 @@ describe('App Form Submission', () => {
       await waitFor(() => {
         expect(mockedAxiosPost).toHaveBeenCalledWith(
           '/api/calculate-success-rate',
-          expect.stringContaining('"numPriorPregnancies":2')
+          expect.objectContaining({
+            numPriorPregnancies: 2,
+          })
         );
       }, { timeout: 3000 });
     });
@@ -238,7 +250,9 @@ describe('App Form Submission', () => {
       await waitFor(() => {
         expect(mockedAxiosPost).toHaveBeenCalledWith(
           '/api/calculate-success-rate',
-          expect.stringContaining('"numPriorBirths":0')
+          expect.objectContaining({
+            numPriorBirths: 0,
+          })
         );
       }, { timeout: 3000 });
     });
@@ -256,7 +270,9 @@ describe('App Form Submission', () => {
       await waitFor(() => {
         expect(mockedAxiosPost).toHaveBeenCalledWith(
           '/api/calculate-success-rate',
-          expect.stringContaining('"numPriorBirths":2')
+          expect.objectContaining({
+            numPriorBirths: 2,
+          })
         );
       }, { timeout: 3000 });
     });
@@ -310,7 +326,9 @@ describe('App Form Submission', () => {
       await waitFor(() => {
         expect(mockedAxiosPost).toHaveBeenCalledWith(
           '/api/calculate-success-rate',
-          expect.stringContaining('"uterine_factor":true')
+          expect.objectContaining({
+            uterine_factor: true,
+          })
         );
       }, { timeout: 3000 });
     });

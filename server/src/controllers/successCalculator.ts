@@ -21,7 +21,6 @@ async function parseCsv(filePath: string): Promise<IVFSuccessFormulaRow[]> {
 
         results.push(transformedRow);
       })
-      
       .on('end', () => resolve(results as IVFSuccessFormulaRow[]))
       .on('error', (error) => reject(error));
   });
@@ -116,7 +115,6 @@ export async function getFormula(formulaParams: FormulaSelectionParams): Promise
 
   try {
     data = await parseCsv(filePath);
-    console.log('Parsed CSV Data:', data);
   } catch (error) {
     console.error('Error parsing CSV:', error);
   }
@@ -133,13 +131,7 @@ export async function getFormula(formulaParams: FormulaSelectionParams): Promise
   return formula;
 }
 
-export async function calculate(reasonForIVF: string): Promise<number> {
-  const filePath = path.join(path.dirname(__dirname), 'data', 'ivf_success_formulas.csv');
-  try {
-    const data = await parseCsv(filePath);
-    console.log('Parsed CSV Data:', data);
-  } catch (error) {
-    console.error('Error parsing CSV:', error);
-  }
+export async function calculate(formula: IVFSuccessFormulaRow): Promise<number> {
+  
   return Math.random();
 }

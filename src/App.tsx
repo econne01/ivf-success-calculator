@@ -80,11 +80,10 @@ function App() {
     setIsLoading(true);
     console.log('Form data:', formDataStrings);
     console.log('Post data:', postData);
-  
     setTimeout(() => {
-      console.log('Simulating a delay...');
+      // Simulating a delay...
       axios
-        .post('/api/calculate-success-rate', JSON.stringify(postData))
+        .post('/api/calculate-success-rate', postData)
         .then((response) => {
           console.log('Success rate:', response.data.successRate);
           // clearForm();

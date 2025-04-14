@@ -4,12 +4,17 @@ import { getFormula, calculate } from '../controllers/successCalculator';
 const router = express.Router();
 
 router.post('/calculate-success-rate', async (req: Request, res: Response) => {
-    const { isUsingOwnEggs, hasPriorIVF, reasonForIVF } = req.body;
-    console.log('Handling request with body:', req.body);
+    console.log('Received request:', req.body);
+    const { isUsingOwnEggs, hasPriorIVF, unknown_reason } = req.body;
 
-    const formula = await getFormula(req.body);
+    const formulaParams = {
+        isUsingOwnEggs: isUsingOwnEggs,
+        hasPriorIVF: hasPriorIVF,
+        isInfertilityReasonKnown: !unknown_reason,
+    };
+    const formula = await getFormula(formulaParams);
     console.log('Formula:', formula);
-    let successRate = await calculate(reasonForIVF);
+    let successRate = await calculate(formulaParams);
     res.status(200).json({
         successRate: successRate,
     });
