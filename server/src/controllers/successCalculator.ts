@@ -10,7 +10,7 @@ import {
   IVFFormulaPriorScores
 } from './IVFSuccessFormulaRow';
 
-async function parseCsv(filePath: string): Promise<IVFSuccessFormulaRow[]> {
+export async function parseCsv(filePath: string): Promise<IVFSuccessFormulaRow[]> {
   return new Promise((resolve, reject) => {
     const results: IVFSuccessFormulaRow[] = [];
 
