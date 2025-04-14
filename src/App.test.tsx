@@ -44,7 +44,7 @@ async function fillRequiredFields(overrides: Partial<Record<string, string>> = {
     .getByText(new RegExp(values.numPriorPregnancies as string, 'i'));
   fireEvent.click(numPriorPregnanciesOption);
 
-  // Fill in the "numPriorDeliveries" field (if applicable)
+  // Fill in the "numPriorBirths" field (if applicable)
   const numPriorBirthsButton = screen.getByLabelText(/how many prior births have you had/i);
   fireEvent.click(numPriorBirthsButton);
 
@@ -160,7 +160,6 @@ describe('App Form Submission', () => {
     });
   });
 
-
   describe('Number of previous pregnancies', () => {
     it('sets 0 for None', async () => {
       await fillRequiredFields({
@@ -180,7 +179,7 @@ describe('App Form Submission', () => {
       }, { timeout: 3000 });
     });
 
-    it('sets 2 for "2 or more""', async () => {
+    it('sets 2 for "2 or more"', async () => {
       await fillRequiredFields({
         numPriorPregnancies: '2 or more',
       });
@@ -196,6 +195,76 @@ describe('App Form Submission', () => {
           expect.stringContaining('"numPriorPregnancies":2')
         );
       }, { timeout: 3000 });
+    });
+  });
+
+  describe('Number of previous births', () => {
+    it('sets 0 for None', async () => {
+      await fillRequiredFields({
+        numPriorBirths: 'None',
+      });
+
+      // Submit the form
+      const submitButton = screen.getByRole('button', { name: /submit/i });
+      fireEvent.click(submitButton);
+
+      // Wait for the axios.post call
+      await waitFor(() => {
+        expect(mockedAxiosPost).toHaveBeenCalledWith(
+          '/api/calculate-success-rate',
+          expect.stringContaining('"numPriorBirths":0')
+        );
+      }, { timeout: 3000 });
+    });
+
+    it('sets 2 for "2 or more"', async () => {
+      await fillRequiredFields({
+        numPriorBirths: '2 or more',
+      });
+
+      // Submit the form
+      const submitButton = screen.getByRole('button', { name: /submit/i });
+      fireEvent.click(submitButton);
+
+      // Wait for the axios.post call
+      await waitFor(() => {
+        expect(mockedAxiosPost).toHaveBeenCalledWith(
+          '/api/calculate-success-rate',
+          expect.stringContaining('"numPriorBirths":2')
+        );
+      }, { timeout: 3000 });
+    });
+
+    it('disables options that exceed number of prior pregnancies', async () => {
+      await fillRequiredFields({
+        numPriorPregnancies: '1',
+        numPriorBirths: '1',
+      });
+
+      // verify that option for 2 or more is not available
+      const numPriorBirthsButton = screen.getByLabelText(/how many prior births have you had/i);
+      fireEvent.click(numPriorBirthsButton);
+      const numPriorBirthsOption = within(screen.getByRole('dialog'))
+        .queryByText(/2 or more/i);
+      expect(numPriorBirthsOption).toBeDisabled();
+    });
+
+    it('resets numPriorBirths when numPriorPregnancies changes to make it invalid', async () => {
+      await fillRequiredFields({
+        numPriorPregnancies: '2 or more',
+        numPriorBirths: '2 or more',
+      });
+
+      // when numPriorPregnancies changes to 1...
+      const numPriorPregnanciesButton = screen.getByLabelText(/how many prior pregnancies have you had/i);
+      fireEvent.click(numPriorPregnanciesButton);
+      const numPriorPregnanciesOption = within(screen.getByRole('dialog'))
+        .getByText(/1/i);
+      fireEvent.click(numPriorPregnanciesOption);
+
+      // ...expect the numPriorBirths to be reset
+      const numPriorBirthsButton = screen.getByLabelText(/how many prior births have you had/i);
+      expect(numPriorBirthsButton).toHaveTextContent('Select an item');
     });
   });
 });
