@@ -21,7 +21,15 @@ import './AppForm.css'
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedReason, setSelectedReason] = useState<string[]>([]); // State to manage selected reason(s) for IVF
+  const [selectedTubalFactor, setSelectedTubalFactor] = useState<boolean>(false);
+  const [selectedMaleInfertility, setSelectedMaleInfertility] = useState<boolean>(false);
+  const [selectedEndometriosis, setSelectedEndometriosis] = useState<boolean>(false);
+  const [selectedOvulatoryDisorder, setSelectedOvulatoryDisorder] = useState<boolean>(false);
+  const [selectedDiminishedReserve, setSelectedDiminishedReserve] = useState<boolean>(false);
+  const [selectedUterineFactor, setSelectedUterineFactor] = useState<boolean>(false);
+  const [selectedOtherReason, setSelectedOtherReason] = useState<boolean>(false);
+  const [selectedUnexplainedReason, setSelectedUnexplainedReason] = useState<boolean>(false);
+  const [selectedUnknownReason, setSelectedUnknownReason] = useState<boolean>(false);
   const formRef = useRef<HTMLFormElement>(null); // Add a ref for the form
 
   // Handle form submission
@@ -90,6 +98,27 @@ function App() {
       formRef.current.reset();
     }
   };
+
+  // Manage checkboxes for Infertility reasons
+  const clearKnownInfertilityReasons = () => {
+    setSelectedTubalFactor(false);
+    setSelectedMaleInfertility(false);
+    setSelectedEndometriosis(false);
+    setSelectedOvulatoryDisorder(false);
+    setSelectedDiminishedReserve(false);
+    setSelectedUterineFactor(false);
+    setSelectedOtherReason(false);
+  };
+
+  const toggleInfertilityReason = (isChecked: boolean, setStateMethod: (isChecked: boolean)=>void) => {
+    if (isChecked) {
+      setStateMethod(true);
+      setSelectedUnexplainedReason(false);
+      setSelectedUnknownReason(false);
+    } else {
+      setStateMethod(false);
+    }
+  }
 
   return (
     <>
@@ -179,18 +208,90 @@ function App() {
               </Popover>
             </Select>
 
-            <CheckboxGroup name="reasonForIVF" onChange={setSelectedReason}isRequired>
+            <CheckboxGroup name="reasonForIVF" isRequired>
               <Label>What is the reason for your IVF treatment?</Label>
               <Group>
-                <FormCheckbox value="tubal-factor" label={'Tubal Factor'}/>
-                <FormCheckbox value="male-factor-infertility" label={'Male Factor Infertility'}/>
-                <FormCheckbox value="endometriosis" label={'Endometriosis'}/>
-                <FormCheckbox value="ovulatory-disorder" label={'Ovulatory Disorder'}/>
-                <FormCheckbox value="diminished-ovarian-reserve" label={'Diminished Ovarian Reserve'}/>
-                <FormCheckbox value="uterine-factor" label={'Uterine Factor'}/>
-                <FormCheckbox value="other" label={'Other Reason'}/>
-                <FormCheckbox value="unexplained" label={'Unexplained (Idiopathic) infertility '}/>
-                <FormCheckbox value="no-reason" label={'I don’t know/no reason'}/>
+                <FormCheckbox
+                  value="tubal-factor"
+                  isSelected={selectedTubalFactor}
+                  onChange={(isSelected) => toggleInfertilityReason(isSelected, setSelectedTubalFactor)}
+                >
+                  <Label>Tubal Factor</Label>
+                </FormCheckbox>
+                <FormCheckbox
+                  value="male-factor-infertility"
+                  isSelected={selectedMaleInfertility}
+                  onChange={(isSelected) => toggleInfertilityReason(isSelected, setSelectedMaleInfertility)}
+                >
+                  <Label>Male Factor Infertility</Label>
+                </FormCheckbox>
+                <FormCheckbox
+                  value="endometriosis"
+                  isSelected={selectedEndometriosis}
+                  onChange={(isSelected) => toggleInfertilityReason(isSelected, setSelectedEndometriosis)}
+                >
+                  <Label>Endometriosis</Label>
+                </FormCheckbox>
+                <FormCheckbox
+                  value="ovulatory-disorder"
+                  isSelected={selectedOvulatoryDisorder}
+                  onChange={(isSelected) => toggleInfertilityReason(isSelected, setSelectedOvulatoryDisorder)}
+                >
+                  <Label>Ovulatory Disorder</Label>
+                </FormCheckbox>
+                <FormCheckbox
+                  value="diminished-ovarian-reserve"
+                  isSelected={selectedDiminishedReserve}
+                  onChange={(isSelected) => toggleInfertilityReason(isSelected, setSelectedDiminishedReserve)}
+                >
+                  <Label>Diminished Ovarian Reserve</Label>
+                </FormCheckbox>
+                <FormCheckbox
+                  value="uterine-factor"
+                  isSelected={selectedUterineFactor}
+                  onChange={(isSelected) => toggleInfertilityReason(isSelected, setSelectedUterineFactor)}
+                >
+                  <Label>Uterine Factor</Label>
+                </FormCheckbox>
+                <FormCheckbox
+                  value="other"
+                  isSelected={selectedOtherReason}
+                  onChange={(isSelected) => toggleInfertilityReason(isSelected, setSelectedOtherReason)}
+                >
+                  <Label>Other Reason</Label>
+                </FormCheckbox>
+                <div>(OR)</div>
+                <FormCheckbox
+                  value="unexplained"
+                  isSelected={selectedUnexplainedReason}
+                  onChange={(isChecked) => {
+                    if (isChecked) {
+                      clearKnownInfertilityReasons();
+                      setSelectedUnknownReason(false);
+                      setSelectedUnexplainedReason(true);
+                    } else {
+                      setSelectedUnexplainedReason(false);
+                    }
+                  }}
+                >
+                  <Label>Unexplained (Idiopathic) infertility</Label>
+                </FormCheckbox>
+                <div>(OR)</div>
+                <FormCheckbox
+                  value="no-reason"
+                  isSelected={selectedUnknownReason}
+                  onChange={(isChecked) => {
+                    if (isChecked) {
+                      clearKnownInfertilityReasons();
+                      setSelectedUnexplainedReason(false);
+                      setSelectedUnknownReason(true);
+                    } else {
+                      setSelectedUnknownReason(false);
+                    }
+                  }}
+                >
+                  <Label>I don’t know/no reason</Label>
+                </FormCheckbox>
               </Group>
               <FieldError />
             </CheckboxGroup>

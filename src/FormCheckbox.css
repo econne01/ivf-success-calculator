@@ -41,22 +41,19 @@
       outline: 2px solid var(--focus-ring-color);
       outline-offset: 2px;
     }
-  
-    &[data-selected],
-    &[data-indeterminate] {
-      .checkbox {
-        border-color: var(--selected-color);
-        background: var(--selected-color);
-      }
-  
-      &[data-pressed] .checkbox {
-        border-color: var(--selected-color-pressed);
-        background: var(--selected-color-pressed);
-      }
-  
+      
+    .checkbox.form-checkbox-selected {
+      border-color: var(--selected-color);
+      background: var(--selected-color);
+
       svg {
         stroke-dashoffset: 44;
       }
+    }
+
+    &[data-pressed] .checkbox.form-checkbox-selected {
+      border-color: var(--selected-color-pressed);
+      background: var(--selected-color-pressed);
     }
   
     &[data-indeterminate] {
