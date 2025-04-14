@@ -30,6 +30,7 @@ function App() {
   const [selectedOtherReason, setSelectedOtherReason] = useState<boolean>(false);
   const [selectedUnexplainedReason, setSelectedUnexplainedReason] = useState<boolean>(false);
   const [selectedUnknownReason, setSelectedUnknownReason] = useState<boolean>(false);
+  const [successRate, setSuccessRate] = useState<number | null>(null); // New state for success rate
   const formRef = useRef<HTMLFormElement>(null); // Add a ref for the form
 
   // Handle form submission
@@ -86,10 +87,12 @@ function App() {
         .post('/api/calculate-success-rate', postData)
         .then((response) => {
           console.log('Success rate:', response.data.successRate);
+          setSuccessRate(response.data.successRate);
           // clearForm();
         })
         .catch((error) => {
           console.error('Error submitting form:', error);
+          setSuccessRate(null);
         })
         .finally(() => {
           setIsLoading(false);
@@ -346,6 +349,14 @@ function App() {
             <Button type="reset">Start Over</Button>
           </Form>
         </div>
+
+        {/* Display success rate */}
+        {successRate !== null && (
+          <div className="success-rate">
+            <h3>Your Estimated Success Rate</h3>
+            <p className="success-rate-value">{(successRate * 100).toFixed(2)}%</p>
+          </div>
+        )}
       </div>
     </>
   )

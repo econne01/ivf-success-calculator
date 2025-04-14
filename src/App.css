@@ -39,3 +39,23 @@
   padding: 0.25rem;
   line-height: 0.5rem;
 }
+
+/* Styles for the success rate card */
+.success-rate {
+  border: 2px solid var(--primary-color);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  background-color: #f9f9f9; /* Light background for contrast */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for a card effect */
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* Styles for the success rate value */
+.success-rate-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin: 8px 0;
+}

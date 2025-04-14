@@ -21,7 +21,8 @@
   --border-radius: 8px;
   --text-color: #333;
   --text-color-placeholder: #999;
-  --highlight-background: #0078d4;
+  --primary-color: #0078d4;
+  --highlight-background: var(--primary-color);
   --highlight-background-pressed: #005a9e;
   --highlight-background-hover: #005a9e;
   --highlight-foreground: #fff;
