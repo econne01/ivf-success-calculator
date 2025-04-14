@@ -106,14 +106,6 @@ type IVFSuccessFormulaRow = {
   formula_bmi_power_coefficient: number;
   formula_bmi_power_factor: Integer;
 } & IVFFormulaInfertilityScores & IVFFormulaPriorScores;
-type IVFSuccessFormulaRowKeys = keyof IVFSuccessFormulaRow;
-
-
-const formulaPropToHeaderMap: Record<string, IVFSuccessFormulaRowKeys> = {
-  isUsingOwnEggs: 'param_using_own_eggs',
-  hasPriorIVF: 'param_attempted_ivf_previously',
-  isInfertilityReasonKnown: 'param_is_reason_for_infertility_known',
-};
 
 export async function getFormula(formulaParams: FormulaSelectionParams): Promise<IVFSuccessFormulaRow> {
   const filePath = path.join(path.dirname(__dirname), 'data', 'ivf_success_formulas.csv');
@@ -164,14 +156,14 @@ export async function calculate(
   }
 
   // Calculate the prior pregnancy and birth scores
-  let priorPregnancyCnt = Math.max(0, Math.min(2, calcParams.numPriorPregnancies));
+  const priorPregnancyCnt = Math.max(0, Math.min(2, calcParams.numPriorPregnancies));
   const priorPregnancyKey =`formula_prior_pregnancies_${
       priorPregnancyCnt === 2 ? '2+' : priorPregnancyCnt
     }_value` as keyof IVFFormulaPriorScores;
   const priorPregnancyScore = formula[priorPregnancyKey];
 
 
-  let priorBirthsCnt = Math.max(0, Math.min(2, calcParams.numPriorBirths));
+  const priorBirthsCnt = Math.max(0, Math.min(2, calcParams.numPriorBirths));
   const priorBirthKey =`formula_prior_live_births_${
     priorBirthsCnt === 2 ? '2+' : priorBirthsCnt
     }_value` as keyof IVFFormulaPriorScores;
@@ -183,13 +175,5 @@ export async function calculate(
     infertilityReasonScore +
     priorPregnancyScore +
     priorBirthsScore;
-  console.log('Intercept Score:', interceptScore);
-  console.log('Age Score:', ageScore);
-  console.log('BMI Score:', BMIScore);
-  console.log('Infertility Reason Score:', infertilityReasonScore);
-  console.log('Prior Pregnancy Score:', priorPregnancyScore);
-  console.log('Prior Births Score:', priorBirthsScore);
-  console.log('Score:', score);
-  console.log('Precentage', Math.exp(score) / (1 + Math.exp(score)));
   return Math.exp(score) / (1 + Math.exp(score));
 }
